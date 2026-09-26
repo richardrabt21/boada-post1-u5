@@ -15,3 +15,9 @@ La validación de que un laboratorio no puede tener dos reservas en horarios que
 
 ### 2. Manejo de errores centralizado con @RestControllerAdvice
 En vez de usar try/catch dentro de cada método del `ReservaController`, se centralizó la traducción de excepciones a códigos HTTP en `GlobalExceptionHandler`: `SolapamientoReservaException` → 409, `NoSuchElementException` → 404, `IllegalArgumentException` / errores de validación → 400. Esto mantiene el controller limpio y evita duplicar el mapeo de errores si se agregan más endpoints.
+
+### 3. Reutilización del Service entre REST y MVC
+El `ReservaWebController` (Parte 2) no reimplementa ninguna regla de negocio: inyecta el mismo `ReservaService` que usa el `ReservaController` (Parte 1) y captura las mismas excepciones (`SolapamientoReservaException`, `NoSuchElementException`, `IllegalArgumentException`) para mostrarlas como mensaje en la vista en vez de como código HTTP JSON. Esto garantiza que la regla de solapamiento se comporte igual sin importar si la reserva llega por la API o por el formulario web.
+
+### 4. Manejo de errores diferenciado por capa de presentación
+Mientras que el Controller REST delega los errores al `GlobalExceptionHandler` (que produce respuestas JSON con código HTTP), el `ReservaWebController` los captura localmente con try/catch y los agrega al `Model` para renderizarlos dentro de la misma plantilla Thymeleaf. Se decidió no reutilizar el `@RestControllerAdvice` en la parte MVC porque este último produce respuestas JSON (piensa en `@ResponseBody`), que no es lo que necesita una vista HTML con redirecciones.

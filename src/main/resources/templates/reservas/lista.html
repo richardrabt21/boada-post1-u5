@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Reservas de Laboratorios</title>
+</head>
+<body>
+    <h1>Reservas de Laboratorios</h1>
+    <p><a th:href="@{/reservas/nueva}">Crear nueva reserva</a></p>
+
+    <table border="1" cellpadding="5">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Laboratorio</th>
+                <th>Solicitante</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+                <th>Estado</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="r : ${reservas}">
+                <td th:text="${r.id}">1</td>
+                <td th:text="${r.laboratorio.nombre}">Lab</td>
+                <td th:text="${r.nombreSolicitante}">Nombre</td>
+                <td th:text="${r.inicio}">2026-01-01T08:00</td>
+                <td th:text="${r.fin}">2026-01-01T10:00</td>
+                <td th:text="${r.estado}">PENDIENTE</td>
+                <td>
+                    <form th:if="${r.estado.name() != 'CANCELADA'}"
+                          th:action="@{/reservas/{id}/cancelar(id=${r.id})}"
+                          method="post">
+                        <button type="submit">Cancelar</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>
